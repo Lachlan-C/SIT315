@@ -1,0 +1,29 @@
+#define led 13
+#define sensor 2
+int motion = 0;
+void setup()
+{
+  pinMode(sensor, INPUT);
+  pinMode(led, OUTPUT);
+  Serial.begin(9600);
+  attachInterrupt(digitalPinToInterrupt(sensor), motion_changed, CHANGE);
+}
+
+void loop()
+{
+  delay(1000);
+}
+
+void motion_changed()
+{
+  motion = digitalRead(sensor);
+  if (motion == HIGH) {
+    digitalWrite(led, HIGH);
+    Serial.print("Motion, ");
+    Serial.println("LED ON");
+  } else {
+    digitalWrite(led, LOW);
+    Serial.print("No Motion, ");
+    Serial.println("LED OFF");
+  }
+}

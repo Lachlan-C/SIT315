@@ -1,0 +1,80 @@
+#define led1 13
+#define led2 12
+#define led3 11
+#define led4 10
+#define sensor1 4
+#define sensor2 5
+#define sensor3 6
+int motion1 = 0;
+int motion2 = 0;
+int motion3 = 0;
+int ledTimerPos = 0;
+
+void setup()
+{
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+  pinMode(led4, OUTPUT);
+  Serial.begin(9600);
+  PCICR |= B00000100;
+  PCMSK2 |= B01110000;
+  
+  noInterrupts();
+  TCCR1A =0;
+  TCCR1B =0;
+  TCNT1 =0;
+  
+  //Interupt Fires Every 3 seconds
+  OCR1A = 46874;
+  
+  TCCR1B |= (1 << CS12) | (1 << CS10);
+  TIMSK1 |= (1 << OCIE1A);
+  TCCR1B |= (1 << WGM12);
+  interrupts();
+}
+
+void loop()
+{
+  delay(1000);
+}
+
+ISR(TIMER1_COMPA_vect) 
+{
+  ledTimerPos = digitalRead(led4);
+  if (ledTimerPos == LOW) {
+    digitalWrite(led4, HIGH);
+    Serial.println("Led4 ON");
+  } else {
+    digitalWrite(led4, LOW);
+    Serial.println("Led4 OFF");
+  }
+}
+
+ISR (PCINT2_vect)
+{
+  motion1 = digitalRead(sensor1);
+  motion2 = digitalRead(sensor2);
+  motion3 = digitalRead(sensor3);
+  if (motion1 == HIGH) {
+    digitalWrite(led1, HIGH);
+    Serial.println("1: Motion, Led1 ON");
+  } else {
+    digitalWrite(led1, LOW);
+    Serial.println("1: No Motion, Led1 OFF");
+  }
+  if (motion2 == HIGH) {
+    digitalWrite(led2, HIGH);
+    Serial.println("2: Motion, Led2 ON");
+  } else {
+    digitalWrite(led2, LOW);
+    Serial.println("2: No Motion, Led2 OFF");
+  }
+  if (motion3 == HIGH) {
+    digitalWrite(led3, HIGH);
+    Serial.println("3: Motion, Led3 ON");
+  } else {
+    digitalWrite(led3, LOW);
+    Serial.println("3: No Motion, Led3 OFF");
+  }
+}

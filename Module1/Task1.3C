@@ -1,0 +1,46 @@
+#define led1 13
+#define led2 12
+#define sensor1 2
+#define sensor2 3
+int motion1 = 0;
+int motion2 = 0;
+void setup()
+{
+  pinMode(sensor1, INPUT);
+  pinMode(sensor2, INPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  Serial.begin(9600);
+  attachInterrupt(digitalPinToInterrupt(sensor1), motion_changed, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(sensor2), motion_changed_two, CHANGE);
+}
+
+void loop()
+{
+  delay(1000);
+}
+
+void motion_changed()
+{
+  motion1 = digitalRead(sensor1);
+  if (motion1 == HIGH) {
+    digitalWrite(led1, HIGH);
+    Serial.println("1: Motion, Led1 ON");
+  } else {
+    digitalWrite(led1, LOW);
+    Serial.println("1: No Motion, Led1 OFF");
+  }
+}
+
+
+void motion_changed_two()
+{
+  motion2 = digitalRead(sensor2);
+  if (motion2 == HIGH) {
+    digitalWrite(led2, HIGH);
+    Serial.println("2: Motion, Led2 ON");
+  } else {
+    digitalWrite(led2, LOW);
+    Serial.println("2: No Motion, Led2 OFF");
+  }
+}
